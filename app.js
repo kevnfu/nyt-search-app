@@ -39,11 +39,11 @@ function formatDate(d) {
 function search(searchTerm, number, start, end){
 
     var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=e4fc1d91deb54638883811b44d2981c8&q=" + searchTerm;
-    if(start !== undefined) {
+    if(start !== "") {
         queryURL += "&begin_date=" + formatDate(start);
     }
 
-    if(end !== undefined) {
+    if(end !== "") {
         queryURL +="&end_date=" + formatDate(end);
     }
 
@@ -53,11 +53,13 @@ function search(searchTerm, number, start, end){
     }).then(function (response) {
         
         var results = response.response.docs;
-        console.log(results);
 
-        for (i=0;i<number;i++){
+        if(number > results.length) number = results.length;
+
+        for (i=0; i<number; i++){
             console.log(results[i]);
-            addResultCard(results[i].headline.main, results[i].byline.original, results[i].snippet, results[i].pub_date, results[i].web_url);
+            let byline = "byline" in results[i] ? results[i].byline.original : "unknown";
+            addResultCard(results[i].headline.main, byline, results[i].snippet, results[i].pub_date, results[i].web_url);
         }
         
     })
